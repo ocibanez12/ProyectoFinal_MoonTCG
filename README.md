@@ -18,12 +18,6 @@
 - **ESLint + Standard**: Para mantener buenas prácticas de código.
 
 ---
-## Instalación
-
-1. Clona el repositorio:
-
-```bash
-git clone https://github.com/TU_USUARIO/tcgmoon.git
 =======
 # React + Vite
 
