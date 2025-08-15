@@ -1,7 +1,7 @@
 <<<<<<< HEAD
 # TCGMoon
 
-> Proyecto Fullstack de un e-commerce de cartas coleccionables, figuras y accesorios.  
+> Proyecto Fullstack de un e-commerce de cartas coleccionables, sobres y packs.  
 > Desarrollado con React.js, Vite y Context API, incluye registro, login, carrito, favoritos y filtros de productos.
 
 ---
