@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "api:dev": "cd api && npm run dev",
+    "api:start": "cd api && npm start",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
