@@ -26,7 +26,7 @@ export async function listar(req, res, next) {
     const paginaNum = Number(pagina ?? page ?? 1);
     const tamNum = Number(tamanoPagina ?? pageSize ?? 10);
     const resultado = await listarProductos({ pagina: paginaNum, tamanoPagina: tamNum, tipo, usuario_id });
-    res.json(aHateoasColeccion(req, 'productos', resultado.rows, { pagina: resultado.pagina, tamanoPagina: resultado.pageSize, total: resultado.total }));
+    res.json(aHateoasColeccion(req, 'productos', resultado.rows, { pagina: resultado.page, tamanoPagina: resultado.pageSize, total: resultado.total }));
   } catch (err) {
     next(err);
   }

@@ -1,25 +1,19 @@
-import { randomBytes, scrypt as _scrypt, timingSafeEqual } from 'crypto';
-import { promisify } from 'node:util';
-
-const scrypt = promisify(_scrypt);
+import bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
 
 export async function hashearContrasena(contrasenaPlano) {
   if (!contrasenaPlano || typeof contrasenaPlano !== 'string') {
     throw Object.assign(new Error('Password inválida'), { status: 400 });
   }
-  const sal = randomBytes(16).toString('hex');
-  const buffer = await scrypt(contrasenaPlano, sal, 64);
-  const hashHex = Buffer.from(buffer).toString('hex');
-  return `scrypt:${sal}:${hashHex}`;
+  const rondas = process.env.BCRYPT_ROUNDS ? Number(process.env.BCRYPT_ROUNDS) : 10;
+  const sal = await bcrypt.genSalt(rondas);
+  const hash = await bcrypt.hash(contrasenaPlano, sal);
+  return hash; // formato bcrypt, p.ej. $2b$10$...
 }
 
 export async function verificarContrasena(contrasenaPlano, almacenado) {
   try {
-    const [esquema, sal, hashHex] = String(almacenado).split(':');
-    if (esquema !== 'scrypt' || !sal || !hashHex) return false;
-    const derivado = await scrypt(contrasenaPlano, sal, 64);
-    const derivadoHex = Buffer.from(derivado).toString('hex');
-    return timingSafeEqual(Buffer.from(derivadoHex, 'utf8'), Buffer.from(hashHex, 'utf8'));
+    return await bcrypt.compare(contrasenaPlano, String(almacenado));
   } catch {
     return false;
   }
