@@ -1,10 +1,10 @@
-export function errorHandler(err, req, res, next) {
-  const status = err.status || 500;
-  const code = err.code || undefined;
-  const message = err.message || 'Error interno del servidor';
-  if (status >= 500) {
-    console.error(err);
+export function manejadorErrores(error, req, res, next) {
+  const estado = error.status || 500;
+  const codigo = error.code || undefined;
+  const mensaje = error.message || 'Error interno del servidor';
+  if (estado >= 500) {
+    console.error(error);
   }
-  res.status(status).json({ error: message, code });
+  res.status(estado).json({ error: mensaje, code: codigo });
 }
 

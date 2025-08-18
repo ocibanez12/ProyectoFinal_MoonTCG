@@ -1,22 +1,22 @@
 import { Router } from 'express';
-import { requestLogger } from '../middlewares/logger.js';
-import { errorHandler } from '../middlewares/errorHandler.js';
-import { notFound } from '../middlewares/notFound.js';
+import { registroSolicitudes } from '../middlewares/logger.js';
+import { manejadorErrores } from '../middlewares/errorHandler.js';
+import { noEncontrado } from '../middlewares/notFound.js';
 
-import { router as usuariosRouter } from './usuarios.routes.js';
-import { router as productosRouter } from './productos.routes.js';
-import { router as favoritosRouter } from './favoritos.routes.js';
-import { router as carritoRouter } from './carrito.routes.js';
+import { enrutador as enrutadorUsuarios } from './usuarios.routes.js';
+import { enrutador as enrutadorProductos } from './productos.routes.js';
+import { enrutador as enrutadorFavoritos } from './favoritos.routes.js';
+import { enrutador as enrutadorCarrito } from './carrito.routes.js';
 
-export const router = Router();
+export const enrutador = Router();
 
-router.use(requestLogger);
+enrutador.use(registroSolicitudes);
 
-router.use('/usuarios', usuariosRouter);
-router.use('/productos', productosRouter);
-router.use('/favoritos', favoritosRouter);
-router.use('/carrito', carritoRouter);
+enrutador.use('/usuarios', enrutadorUsuarios);
+enrutador.use('/productos', enrutadorProductos);
+enrutador.use('/favoritos', enrutadorFavoritos);
+enrutador.use('/carrito', enrutadorCarrito);
 
-router.use(notFound);
-router.use(errorHandler);
+enrutador.use(noEncontrado);
+enrutador.use(manejadorErrores);
 

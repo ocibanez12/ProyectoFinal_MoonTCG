@@ -1,22 +1,22 @@
-import { query } from '../db/pool.js';
+import { consultar } from '../db/pool.js';
 
-export async function createProducto({ nombre, precio, tipo, imagen_url, usuario_id }) {
+export async function crearProducto({ nombre, precio, tipo, imagen_url, usuario_id }) {
   const sql = `INSERT INTO productos (nombre, precio, tipo, imagen_url, usuario_id)
                VALUES ($1, $2, $3, $4, $5)
                RETURNING id, nombre, precio, tipo, imagen_url, usuario_id`;
   const values = [nombre, precio, tipo, imagen_url || null, usuario_id];
-  const { rows } = await query(sql, values);
+  const { rows } = await consultar(sql, values);
   return rows[0];
 }
 
-export async function findProductoById(id) {
-  const { rows } = await query('SELECT * FROM productos WHERE id = $1', [id]);
+export async function buscarProductoPorId(id) {
+  const { rows } = await consultar('SELECT * FROM productos WHERE id = $1', [id]);
   return rows[0] || null;
 }
 
-export async function listProductos({ page = 1, pageSize = 10, tipo, usuario_id } = {}) {
-  const limit = Math.max(1, Math.min(100, Number(pageSize)));
-  const offset = (Math.max(1, Number(page)) - 1) * limit;
+export async function listarProductos({ pagina = 1, tamanoPagina = 10, tipo, usuario_id } = {}) {
+  const limit = Math.max(1, Math.min(100, Number(tamanoPagina)));
+  const offset = (Math.max(1, Number(pagina)) - 1) * limit;
   const where = [];
   const params = [];
   if (tipo) {
@@ -29,28 +29,28 @@ export async function listProductos({ page = 1, pageSize = 10, tipo, usuario_id 
   }
   const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
   const totalQuery = `SELECT COUNT(*)::int AS total FROM productos ${whereSql}`;
-  const { rows: totalRows } = await query(totalQuery, params);
+  const { rows: totalRows } = await consultar(totalQuery, params);
   const total = totalRows[0].total;
   params.push(limit, offset);
   const dataQuery = `SELECT * FROM productos ${whereSql} ORDER BY id DESC LIMIT $${params.length - 1} OFFSET $${params.length}`;
-  const { rows } = await query(dataQuery, params);
-  return { rows, total, page: Math.max(1, Number(page)), pageSize: limit };
+  const { rows } = await consultar(dataQuery, params);
+  return { rows, total, page: Math.max(1, Number(pagina)), pageSize: limit };
 }
 
-export async function updateProducto(id, data) {
-  const allowed = ['nombre', 'precio', 'tipo', 'imagen_url'];
-  const entries = Object.entries(data).filter(([k, v]) => allowed.includes(k) && v !== undefined);
-  if (entries.length === 0) return await findProductoById(id);
-  const sets = entries.map(([k], i) => `${k} = $${i + 1}`).join(', ');
-  const values = entries.map(([, v]) => v);
+export async function actualizarProducto(id, datos) {
+  const permitidos = ['nombre', 'precio', 'tipo', 'imagen_url'];
+  const entradas = Object.entries(datos).filter(([k, v]) => permitidos.includes(k) && v !== undefined);
+  if (entradas.length === 0) return await buscarProductoPorId(id);
+  const sets = entradas.map(([k], i) => `${k} = $${i + 1}`).join(', ');
+  const values = entradas.map(([, v]) => v);
   values.push(id);
   const sql = `UPDATE productos SET ${sets} WHERE id = $${values.length} RETURNING *`;
-  const { rows } = await query(sql, values);
+  const { rows } = await consultar(sql, values);
   return rows[0] || null;
 }
 
-export async function deleteProducto(id) {
-  const { rowCount } = await query('DELETE FROM productos WHERE id = $1', [id]);
+export async function eliminarProducto(id) {
+  const { rowCount } = await consultar('DELETE FROM productos WHERE id = $1', [id]);
   return rowCount > 0;
 }
 

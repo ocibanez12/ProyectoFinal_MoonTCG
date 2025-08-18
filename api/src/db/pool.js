@@ -1,8 +1,8 @@
 import { Pool } from 'pg';
 
-const hasDatabaseUrl = Boolean(process.env.DATABASE_URL);
+const tieneUrlBaseDatos = Boolean(process.env.DATABASE_URL);
 
-const pool = hasDatabaseUrl
+const pool = tieneUrlBaseDatos
   ? new Pool({
       connectionString: process.env.DATABASE_URL,
       ssl:
@@ -18,7 +18,7 @@ const pool = hasDatabaseUrl
       database: process.env.PGDATABASE || 'tcgmoon',
     });
 
-export const query = (text, params) => pool.query(text, params);
-export const getClient = () => pool.connect();
+export const consultar = (texto, parametros) => pool.query(texto, parametros);
+export const obtenerCliente = () => pool.connect();
 export default pool;
 

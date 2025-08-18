@@ -1,8 +1,8 @@
-export function requestLogger(req, res, next) {
-  const startedAt = Date.now();
+export function registroSolicitudes(req, res, next) {
+  const inicio = Date.now();
   res.on('finish', () => {
-    const elapsedMs = Date.now() - startedAt;
-    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${elapsedMs}ms`);
+    const transcurridoMs = Date.now() - inicio;
+    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${transcurridoMs}ms`);
   });
   next();
 }

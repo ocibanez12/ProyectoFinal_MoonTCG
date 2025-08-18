@@ -1,66 +1,66 @@
-function baseUrlFromRequest(req) {
-  const protocol = req.protocol;
+function urlBaseDesdeSolicitud(req) {
+  const protocolo = req.protocol;
   const host = req.get('host');
-  return `${protocol}://${host}`;
+  return `${protocolo}://${host}`;
 }
 
-export function itemLinks(req, resource, id) {
-  const base = baseUrlFromRequest(req);
+export function enlacesDeRecurso(req, recurso, id) {
+  const base = urlBaseDesdeSolicitud(req);
   return {
-    self: `${base}/api/${resource}/${id}`,
-    collection: `${base}/api/${resource}`,
+    self: `${base}/api/${recurso}/${id}`,
+    collection: `${base}/api/${recurso}`,
   };
 }
 
-export function collectionLinks(req, resource, page, pageSize, total) {
-  const base = baseUrlFromRequest(req);
-  const url = new URL(`${base}/api/${resource}`);
-  url.searchParams.set('page', String(page));
-  url.searchParams.set('pageSize', String(pageSize));
-  const links = { self: url.toString() };
+export function enlacesDeColeccion(req, recurso, pagina, tamanoPagina, total) {
+  const base = urlBaseDesdeSolicitud(req);
+  const url = new URL(`${base}/api/${recurso}`);
+  url.searchParams.set('page', String(pagina));
+  url.searchParams.set('pageSize', String(tamanoPagina));
+  const enlaces = { self: url.toString() };
 
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  if (page < totalPages) {
-    const nextUrl = new URL(url);
-    nextUrl.searchParams.set('page', String(page + 1));
-    links.next = nextUrl.toString();
+  const totalPaginas = Math.max(1, Math.ceil(total / tamanoPagina));
+  if (pagina < totalPaginas) {
+    const siguienteUrl = new URL(url);
+    siguienteUrl.searchParams.set('page', String(pagina + 1));
+    enlaces.next = siguienteUrl.toString();
   }
-  if (page > 1) {
-    const prevUrl = new URL(url);
-    prevUrl.searchParams.set('page', String(page - 1));
-    links.prev = prevUrl.toString();
+  if (pagina > 1) {
+    const previaUrl = new URL(url);
+    previaUrl.searchParams.set('page', String(pagina - 1));
+    enlaces.prev = previaUrl.toString();
   }
-  links.first = (() => {
+  enlaces.first = (() => {
     const u = new URL(url);
     u.searchParams.set('page', '1');
     return u.toString();
   })();
-  links.last = (() => {
+  enlaces.last = (() => {
     const u = new URL(url);
-    u.searchParams.set('page', String(totalPages));
+    u.searchParams.set('page', String(totalPaginas));
     return u.toString();
   })();
-  return links;
+  return enlaces;
 }
 
-export function toHateoasCollection(req, resource, rows, { page = 1, pageSize = rows.length || 10, total = rows.length } = {}) {
+export function aHateoasColeccion(req, recurso, filas, { page = 1, pageSize = filas.length || 10, total = filas.length } = {}) {
   return {
-    count: rows.length,
+    count: filas.length,
     total,
     page,
     pageSize,
-    items: rows.map((row) => ({
-      ...row,
-      _links: itemLinks(req, resource, row.id),
+    items: filas.map((fila) => ({
+      ...fila,
+      _links: enlacesDeRecurso(req, recurso, fila.id),
     })),
-    _links: collectionLinks(req, resource, page, pageSize, total),
+    _links: enlacesDeColeccion(req, recurso, page, pageSize, total),
   };
 }
 
-export function toHateoasItem(req, resource, row) {
+export function aHateoasRecurso(req, recurso, fila) {
   return {
-    ...row,
-    _links: itemLinks(req, resource, row.id),
+    ...fila,
+    _links: enlacesDeRecurso(req, recurso, fila.id),
   };
 }
 

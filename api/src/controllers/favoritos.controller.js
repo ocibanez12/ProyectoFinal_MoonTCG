@@ -1,34 +1,34 @@
-import { toHateoasCollection } from '../helpers/hateoas.js';
-import { addFavorito, removeFavorito, listFavoritos } from '../models/favoritos.model.js';
+import { aHateoasColeccion } from '../helpers/hateoas.js';
+import { agregarFavorito, eliminarFavorito, listarFavoritos } from '../models/favoritos.model.js';
 
-export async function postFavorito(req, res, next) {
+export async function crearFavoritoCtrl(req, res, next) {
   try {
     const { usuario_id, producto_id } = req.body || {};
     if (!usuario_id || !producto_id) throw Object.assign(new Error('usuario_id y producto_id requeridos'), { status: 400 });
-    const created = await addFavorito({ usuario_id, producto_id });
-    res.status(created ? 201 : 200).json({ created: Boolean(created) });
+    const creado = await agregarFavorito({ usuario_id, producto_id });
+    res.status(creado ? 201 : 200).json({ created: Boolean(creado) });
   } catch (err) {
     next(err);
   }
 }
 
-export async function deleteFavorito(req, res, next) {
+export async function eliminarFavoritoCtrl(req, res, next) {
   try {
     const { usuario_id, producto_id } = req.body || {};
     if (!usuario_id || !producto_id) throw Object.assign(new Error('usuario_id y producto_id requeridos'), { status: 400 });
-    const removed = await removeFavorito({ usuario_id, producto_id });
-    res.status(200).json({ removed });
+    const eliminado = await eliminarFavorito({ usuario_id, producto_id });
+    res.status(200).json({ removed: eliminado });
   } catch (err) {
     next(err);
   }
 }
 
-export async function getFavoritos(req, res, next) {
+export async function obtenerFavoritosCtrl(req, res, next) {
   try {
     const { usuario_id, page = 1, pageSize = 10 } = req.query || {};
     if (!usuario_id) throw Object.assign(new Error('usuario_id requerido'), { status: 400 });
-    const result = await listFavoritos({ usuario_id, page, pageSize });
-    res.json(toHateoasCollection(req, 'favoritos', result.rows, result));
+    const resultado = await listarFavoritos({ usuario_id, pagina: page, tamanoPagina: pageSize });
+    res.json(aHateoasColeccion(req, 'favoritos', resultado.rows, resultado));
   } catch (err) {
     next(err);
   }

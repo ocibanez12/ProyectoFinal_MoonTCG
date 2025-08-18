@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { getCarrito, postCarrito, patchCarritoCantidad, deleteCarritoItem, deleteCarrito } from '../controllers/carrito.controller.js';
+import { obtenerCarritoCtrl, crearCarritoItemCtrl, actualizarCarritoCantidadCtrl, eliminarCarritoItemCtrl, eliminarCarritoCtrl } from '../controllers/carrito.controller.js';
 
-export const router = Router();
+export const enrutador = Router();
 
-router.get('/', getCarrito);
-router.post('/', postCarrito);
-router.patch('/', patchCarritoCantidad);
-router.delete('/item', deleteCarritoItem);
-router.delete('/', deleteCarrito);
+enrutador.get('/', obtenerCarritoCtrl);
+enrutador.post('/', crearCarritoItemCtrl);
+enrutador.patch('/', actualizarCarritoCantidadCtrl);
+enrutador.delete('/item', eliminarCarritoItemCtrl);
+enrutador.delete('/', eliminarCarritoCtrl);
 

@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { getUsuarios, getUsuarioById, postUsuario, patchUsuario, deleteUsuarioById, loginUsuario } from '../controllers/usuarios.controller.js';
+import { obtenerUsuariosCtrl, obtenerUsuarioPorIdCtrl, crearUsuarioCtrl, actualizarUsuarioCtrl, eliminarUsuarioCtrl, loginUsuarioCtrl } from '../controllers/usuarios.controller.js';
 
-export const router = Router();
+export const enrutador = Router();
 
-router.get('/', getUsuarios);
-router.post('/', postUsuario);
-router.post('/login', loginUsuario);
-router.get('/:id', getUsuarioById);
-router.patch('/:id', patchUsuario);
-router.delete('/:id', deleteUsuarioById);
+enrutador.get('/', obtenerUsuariosCtrl);
+enrutador.post('/', crearUsuarioCtrl);
+enrutador.post('/login', loginUsuarioCtrl);
+enrutador.get('/:id', obtenerUsuarioPorIdCtrl);
+enrutador.patch('/:id', actualizarUsuarioCtrl);
+enrutador.delete('/:id', eliminarUsuarioCtrl);
 
