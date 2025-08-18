@@ -22,11 +22,9 @@ export async function crear(req, res, next) {
 
 export async function listar(req, res, next) {
   try {
-    const { page = 1, pageSize = 10, tipo, usuario_id, pagina, tamanoPagina } = req.query;
-    const paginaNum = Number(pagina ?? page ?? 1);
-    const tamNum = Number(tamanoPagina ?? pageSize ?? 10);
-    const resultado = await listarProductos({ pagina: paginaNum, tamanoPagina: tamNum, tipo, usuario_id });
-    res.json(aHateoasColeccion(req, 'productos', resultado.rows, { pagina: resultado.page, tamanoPagina: resultado.pageSize, total: resultado.total }));
+    const { pagina = 1, tamanoPagina = 10, tipo, usuario_id } = req.query;
+    const datos = await listarProductos({ pagina: Number(pagina), tamanoPagina: Number(tamanoPagina), tipo, usuario_id });
+    res.json(aHateoasColeccion(req, 'productos', datos.rows, { pagina: datos.page, tamanoPagina: datos.pageSize, total: datos.total }));
   } catch (err) {
     next(err);
   }

@@ -29,11 +29,9 @@ export async function crear(req, res, next) {
 
 export async function listar(req, res, next) {
   try {
-    const { page = 1, pageSize = 10, pagina, tamanoPagina } = req.query;
-    const paginaNum = Number(pagina ?? page ?? 1);
-    const tamNum = Number(tamanoPagina ?? pageSize ?? 10);
-    const resultado = await listarUsuarios({ pagina: paginaNum, tamanoPagina: tamNum });
-    res.json(aHateoasColeccion(req, 'usuarios', resultado.rows, { pagina: resultado.pagina, tamanoPagina: resultado.tamanoPagina, total: resultado.total }));
+    const { pagina = 1, tamanoPagina = 10 } = req.query;
+    const datos = await listarUsuarios({ pagina: Number(pagina), tamanoPagina: Number(tamanoPagina) });
+    res.json(aHateoasColeccion(req, 'usuarios', datos.rows, { pagina: datos.pagina, tamanoPagina: datos.tamanoPagina, total: datos.total }));
   } catch (err) {
     next(err);
   }

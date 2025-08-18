@@ -25,12 +25,12 @@ export async function eliminar(req, res, next) {
 
 export async function listar(req, res, next) {
   try {
-    const { usuario_id, page = 1, pageSize = 10 } = req.query || {};
-    if (!usuario_id) throw Object.assign(new Error('usuario_id requerido'), { status: 400 });
-    const resultado = await listarFavoritos({ usuario_id, pagina: page, tamanoPagina: pageSize });
-    res.json(aHateoasColeccion(req, 'favoritos', resultado.rows, { pagina: resultado.page, tamanoPagina: resultado.pageSize, total: resultado.total }));
+    const { usuario_id, pagina = 1, tamanoPagina = 10 } = req.query || {};
+    if (!usuario_id) return res.status(400).json({ error: 'usuario_id requerido' });
+    const datos = await listarFavoritos({ usuario_id, pagina: Number(pagina), tamanoPagina: Number(tamanoPagina) });
+    res.json(aHateoasColeccion(req, 'favoritos', datos.rows, { pagina: datos.page, tamanoPagina: datos.pageSize, total: datos.total }));
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: 'Error al obtener favoritos' });
   }
 }
 

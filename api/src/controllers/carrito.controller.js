@@ -4,11 +4,11 @@ import { agregarAlCarrito, actualizarCantidad, eliminarDelCarrito, vaciarCarrito
 export async function crear(req, res, next) {
   try {
     const { usuario_id, producto_id, cantidad = 1 } = req.body || {};
-    if (!usuario_id || !producto_id) throw Object.assign(new Error('usuario_id y producto_id requeridos'), { status: 400 });
+    if (!usuario_id || !producto_id) return res.status(400).json({ error: 'usuario_id y producto_id requeridos' });
     const item = await agregarAlCarrito({ usuario_id, producto_id, cantidad });
     res.status(201).json(item);
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: 'Error al agregar al carrito' });
   }
 }
 
@@ -16,46 +16,46 @@ export async function actualizarCantidadCtrl(req, res, next) {
   try {
     const { usuario_id, producto_id, cantidad } = req.body || {};
     if (!usuario_id || !producto_id || typeof cantidad === 'undefined') {
-      throw Object.assign(new Error('usuario_id, producto_id y cantidad requeridos'), { status: 400 });
+      return res.status(400).json({ error: 'usuario_id, producto_id y cantidad requeridos' });
     }
     const item = await actualizarCantidad({ usuario_id, producto_id, cantidad });
-    if (!item) throw Object.assign(new Error('Item no encontrado'), { status: 404 });
+    if (!item) return res.status(404).json({ error: 'Item no encontrado' });
     res.json(item);
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: 'Error al actualizar cantidad' });
   }
 }
 
 export async function eliminarItem(req, res, next) {
   try {
     const { usuario_id, producto_id } = req.body || {};
-    if (!usuario_id || !producto_id) throw Object.assign(new Error('usuario_id y producto_id requeridos'), { status: 400 });
+    if (!usuario_id || !producto_id) return res.status(400).json({ error: 'usuario_id y producto_id requeridos' });
     const eliminado = await eliminarDelCarrito({ usuario_id, producto_id });
     res.status(200).json({ removed: eliminado });
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: 'Error al eliminar item del carrito' });
   }
 }
 
 export async function eliminar(req, res, next) {
   try {
     const { usuario_id } = req.body || {};
-    if (!usuario_id) throw Object.assign(new Error('usuario_id requerido'), { status: 400 });
+    if (!usuario_id) return res.status(400).json({ error: 'usuario_id requerido' });
     const cantidadEliminada = await vaciarCarrito({ usuario_id });
     res.status(200).json({ removedCount: cantidadEliminada });
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: 'Error al vaciar carrito' });
   }
 }
 
 export async function listar(req, res, next) {
   try {
-    const { usuario_id, page = 1, pageSize = 20 } = req.query || {};
-    if (!usuario_id) throw Object.assign(new Error('usuario_id requerido'), { status: 400 });
-    const resultado = await listarCarrito({ usuario_id, pagina: page, tamanoPagina: pageSize });
-    res.json(aHateoasColeccion(req, 'carrito', resultado.rows, { pagina: resultado.page, tamanoPagina: resultado.pageSize, total: resultado.total }));
+    const { usuario_id, pagina = 1, tamanoPagina = 20 } = req.query || {};
+    if (!usuario_id) return res.status(400).json({ error: 'usuario_id requerido' });
+    const datos = await listarCarrito({ usuario_id, pagina: Number(pagina), tamanoPagina: Number(tamanoPagina) });
+    res.json(aHateoasColeccion(req, 'carrito', datos.rows, { pagina: datos.page, tamanoPagina: datos.pageSize, total: datos.total }));
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: 'Error al obtener carrito' });
   }
 }
 
