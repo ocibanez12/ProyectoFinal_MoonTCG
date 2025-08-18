@@ -1,3 +1,4 @@
+import { aHateoasColeccion, aHateoasRecurso } from '../helpers/hateoas.js';
 import { hashearContrasena, verificarContrasena } from '../helpers/crypto.js';
 import {
   crearUsuario,
@@ -20,7 +21,7 @@ export async function crear(req, res, next) {
     }
     const hashed = await hashearContrasena(password);
     const creado = await crearUsuario({ nombre, apellido, email, password: hashed });
-    res.status(201).json(creado);
+    res.status(201).json(aHateoasRecurso(req, 'usuarios', creado));
   } catch (err) {
     next(err);
   }
@@ -32,7 +33,7 @@ export async function listar(req, res, next) {
     const paginaNum = Number(pagina ?? page ?? 1);
     const tamNum = Number(tamanoPagina ?? pageSize ?? 10);
     const resultado = await listarUsuarios({ pagina: paginaNum, tamanoPagina: tamNum });
-    res.json({ total: resultado.total, pagina: resultado.pagina, tamanoPagina: resultado.tamanoPagina, items: resultado.rows });
+    res.json(aHateoasColeccion(req, 'usuarios', resultado.rows, { pagina: resultado.pagina, tamanoPagina: resultado.tamanoPagina, total: resultado.total }));
   } catch (err) {
     next(err);
   }
@@ -43,7 +44,7 @@ export async function obtenerPorId(req, res, next) {
     const { id } = req.params;
     const encontrado = await buscarUsuarioPorId(id);
     if (!encontrado) throw Object.assign(new Error('Usuario no encontrado'), { status: 404 });
-    res.json(encontrado);
+    res.json(aHateoasRecurso(req, 'usuarios', encontrado));
   } catch (err) {
     next(err);
   }
@@ -56,7 +57,7 @@ export async function actualizar(req, res, next) {
     if (datos.password) datos.password = await hashearContrasena(String(datos.password));
     const actualizado = await actualizarUsuario(id, datos);
     if (!actualizado) throw Object.assign(new Error('Usuario no encontrado'), { status: 404 });
-    res.json(actualizado);
+    res.json(aHateoasRecurso(req, 'usuarios', actualizado));
   } catch (err) {
     next(err);
   }
@@ -82,7 +83,7 @@ export async function login(req, res, next) {
     const ok = await verificarContrasena(password, usuario.password);
     if (!ok) throw Object.assign(new Error('Credenciales inválidas'), { status: 401 });
     const seguro = { id: usuario.id, nombre: usuario.nombre, apellido: usuario.apellido, email: usuario.email, fecha_creacion: usuario.fecha_creacion };
-    res.json({ usuario: seguro });
+    res.json({ usuario: aHateoasRecurso(req, 'usuarios', seguro) });
   } catch (err) {
     next(err);
   }

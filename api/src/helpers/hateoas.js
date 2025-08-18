@@ -15,45 +15,34 @@ export function enlacesDeRecurso(req, recurso, id) {
 export function enlacesDeColeccion(req, recurso, pagina, tamanoPagina, total) {
   const base = urlBaseDesdeSolicitud(req);
   const url = new URL(`${base}/api/${recurso}`);
-  url.searchParams.set('page', String(pagina));
-  url.searchParams.set('pageSize', String(tamanoPagina));
+  url.searchParams.set('pagina', String(pagina));
+  url.searchParams.set('tamanoPagina', String(tamanoPagina));
   const enlaces = { self: url.toString() };
 
   const totalPaginas = Math.max(1, Math.ceil(total / tamanoPagina));
   if (pagina < totalPaginas) {
     const siguienteUrl = new URL(url);
-    siguienteUrl.searchParams.set('page', String(pagina + 1));
+    siguienteUrl.searchParams.set('pagina', String(pagina + 1));
     enlaces.next = siguienteUrl.toString();
   }
   if (pagina > 1) {
     const previaUrl = new URL(url);
-    previaUrl.searchParams.set('page', String(pagina - 1));
+    previaUrl.searchParams.set('pagina', String(pagina - 1));
     enlaces.prev = previaUrl.toString();
   }
-  enlaces.first = (() => {
-    const u = new URL(url);
-    u.searchParams.set('page', '1');
-    return u.toString();
-  })();
-  enlaces.last = (() => {
-    const u = new URL(url);
-    u.searchParams.set('page', String(totalPaginas));
-    return u.toString();
-  })();
   return enlaces;
 }
 
-export function aHateoasColeccion(req, recurso, filas, { page = 1, pageSize = filas.length || 10, total = filas.length } = {}) {
+export function aHateoasColeccion(req, recurso, filas, { pagina = 1, tamanoPagina = filas.length || 10, total = filas.length } = {}) {
   return {
-    count: filas.length,
     total,
-    page,
-    pageSize,
+    pagina,
+    tamanoPagina,
     items: filas.map((fila) => ({
       ...fila,
       _links: enlacesDeRecurso(req, recurso, fila.id),
     })),
-    _links: enlacesDeColeccion(req, recurso, page, pageSize, total),
+    _links: enlacesDeColeccion(req, recurso, pagina, tamanoPagina, total),
   };
 }
 

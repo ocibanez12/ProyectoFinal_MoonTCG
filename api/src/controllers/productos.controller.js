@@ -1,3 +1,4 @@
+import { aHateoasColeccion, aHateoasRecurso } from '../helpers/hateoas.js';
 import {
   crearProducto,
   buscarProductoPorId,
@@ -13,7 +14,7 @@ export async function crear(req, res, next) {
       throw Object.assign(new Error('nombre, precio, tipo y usuario_id son requeridos'), { status: 400 });
     }
     const creado = await crearProducto({ nombre, precio, tipo, imagen_url, usuario_id });
-    res.status(201).json(creado);
+    res.status(201).json(aHateoasRecurso(req, 'productos', creado));
   } catch (err) {
     next(err);
   }
@@ -25,7 +26,7 @@ export async function listar(req, res, next) {
     const paginaNum = Number(pagina ?? page ?? 1);
     const tamNum = Number(tamanoPagina ?? pageSize ?? 10);
     const resultado = await listarProductos({ pagina: paginaNum, tamanoPagina: tamNum, tipo, usuario_id });
-    res.json({ total: resultado.total, pagina: resultado.pagina, tamanoPagina: resultado.pageSize, items: resultado.rows });
+    res.json(aHateoasColeccion(req, 'productos', resultado.rows, { pagina: resultado.pagina, tamanoPagina: resultado.pageSize, total: resultado.total }));
   } catch (err) {
     next(err);
   }
@@ -36,7 +37,7 @@ export async function obtenerPorId(req, res, next) {
     const { id } = req.params;
     const encontrado = await buscarProductoPorId(id);
     if (!encontrado) throw Object.assign(new Error('Producto no encontrado'), { status: 404 });
-    res.json(encontrado);
+    res.json(aHateoasRecurso(req, 'productos', encontrado));
   } catch (err) {
     next(err);
   }
@@ -48,7 +49,7 @@ export async function actualizar(req, res, next) {
     const datos = { ...req.body };
     const actualizado = await actualizarProducto(id, datos);
     if (!actualizado) throw Object.assign(new Error('Producto no encontrado'), { status: 404 });
-    res.json(actualizado);
+    res.json(aHateoasRecurso(req, 'productos', actualizado));
   } catch (err) {
     next(err);
   }

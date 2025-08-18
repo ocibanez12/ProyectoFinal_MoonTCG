@@ -1,3 +1,4 @@
+import { aHateoasColeccion } from '../helpers/hateoas.js';
 import { agregarFavorito, eliminarFavorito, listarFavoritos } from '../models/favoritos.model.js';
 
 export async function crear(req, res, next) {
@@ -27,7 +28,7 @@ export async function listar(req, res, next) {
     const { usuario_id, page = 1, pageSize = 10 } = req.query || {};
     if (!usuario_id) throw Object.assign(new Error('usuario_id requerido'), { status: 400 });
     const resultado = await listarFavoritos({ usuario_id, pagina: page, tamanoPagina: pageSize });
-    res.json({ total: resultado.total, pagina: resultado.page, tamanoPagina: resultado.pageSize, items: resultado.rows });
+    res.json(aHateoasColeccion(req, 'favoritos', resultado.rows, { pagina: resultado.page, tamanoPagina: resultado.pageSize, total: resultado.total }));
   } catch (err) {
     next(err);
   }
