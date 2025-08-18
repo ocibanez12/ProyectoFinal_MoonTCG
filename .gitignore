@@ -1,1 +1,15 @@
 node_modules
+
+# Excluir frontend (Vite) del repo; mantener solo backend en api/
+/src/
+/assets/
+/components/
+/pages/
+/styles/
+/store/
+/public/
+/index.html
+/vite.config.*
+/eslint.config.js
+/package.json
+/package-lock.json
