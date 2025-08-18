@@ -1,15 +1,11 @@
-node_modules
+# Ignorar todo por defecto en la raíz
+/*
+!.gitignore
+!README.md
+!api/
+!db/
 
-# Excluir frontend (Vite) del repo; mantener solo backend en api/
-/src/
-/assets/
-/components/
-/pages/
-/styles/
-/store/
-/public/
-/index.html
-/vite.config.*
-/eslint.config.js
-/package.json
-/package-lock.json
+# Ignorar node_modules en cualquier lugar
+node_modules
+api/node_modules
+db/node_modules
