@@ -28,7 +28,7 @@ export async function listarUsuarios({ pagina = 1, tamanoPagina = 10 } = {}) {
     'SELECT id, nombre, apellido, email, fecha_creacion FROM usuarios ORDER BY id LIMIT $1 OFFSET $2',
     [limite, desplazamiento]
   );
-  return { rows, total, page: Math.max(1, Number(pagina)), pageSize: limite };
+  return { rows, total, pagina: Math.max(1, Number(pagina)), tamanoPagina: limite };
 }
 
 export async function actualizarUsuario(id, datos) {

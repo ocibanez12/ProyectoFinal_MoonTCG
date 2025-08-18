@@ -1,7 +1,6 @@
-import { aHateoasColeccion } from '../helpers/hateoas.js';
 import { agregarAlCarrito, actualizarCantidad, eliminarDelCarrito, vaciarCarrito, listarCarrito } from '../models/carrito.model.js';
 
-export async function crearCarritoItemCtrl(req, res, next) {
+export async function crear(req, res, next) {
   try {
     const { usuario_id, producto_id, cantidad = 1 } = req.body || {};
     if (!usuario_id || !producto_id) throw Object.assign(new Error('usuario_id y producto_id requeridos'), { status: 400 });
@@ -12,7 +11,7 @@ export async function crearCarritoItemCtrl(req, res, next) {
   }
 }
 
-export async function actualizarCarritoCantidadCtrl(req, res, next) {
+export async function actualizarCantidadCtrl(req, res, next) {
   try {
     const { usuario_id, producto_id, cantidad } = req.body || {};
     if (!usuario_id || !producto_id || typeof cantidad === 'undefined') {
@@ -26,7 +25,7 @@ export async function actualizarCarritoCantidadCtrl(req, res, next) {
   }
 }
 
-export async function eliminarCarritoItemCtrl(req, res, next) {
+export async function eliminarItem(req, res, next) {
   try {
     const { usuario_id, producto_id } = req.body || {};
     if (!usuario_id || !producto_id) throw Object.assign(new Error('usuario_id y producto_id requeridos'), { status: 400 });
@@ -37,7 +36,7 @@ export async function eliminarCarritoItemCtrl(req, res, next) {
   }
 }
 
-export async function eliminarCarritoCtrl(req, res, next) {
+export async function eliminar(req, res, next) {
   try {
     const { usuario_id } = req.body || {};
     if (!usuario_id) throw Object.assign(new Error('usuario_id requerido'), { status: 400 });
@@ -48,12 +47,12 @@ export async function eliminarCarritoCtrl(req, res, next) {
   }
 }
 
-export async function obtenerCarritoCtrl(req, res, next) {
+export async function listar(req, res, next) {
   try {
     const { usuario_id, page = 1, pageSize = 20 } = req.query || {};
     if (!usuario_id) throw Object.assign(new Error('usuario_id requerido'), { status: 400 });
     const resultado = await listarCarrito({ usuario_id, pagina: page, tamanoPagina: pageSize });
-    res.json(aHateoasColeccion(req, 'carrito', resultado.rows, resultado));
+    res.json({ total: resultado.total, pagina: resultado.page, tamanoPagina: resultado.pageSize, items: resultado.rows });
   } catch (err) {
     next(err);
   }

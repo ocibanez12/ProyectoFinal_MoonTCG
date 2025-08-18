@@ -1,4 +1,3 @@
-import { aHateoasColeccion, aHateoasRecurso } from '../helpers/hateoas.js';
 import {
   crearProducto,
   buscarProductoPorId,
@@ -7,53 +6,55 @@ import {
   eliminarProducto,
 } from '../models/productos.model.js';
 
-export async function crearProductoCtrl(req, res, next) {
+export async function crear(req, res, next) {
   try {
     const { nombre, precio, tipo, imagen_url, usuario_id } = req.body || {};
     if (!nombre || !precio || !tipo || !usuario_id) {
       throw Object.assign(new Error('nombre, precio, tipo y usuario_id son requeridos'), { status: 400 });
     }
     const creado = await crearProducto({ nombre, precio, tipo, imagen_url, usuario_id });
-    res.status(201).json(aHateoasRecurso(req, 'productos', creado));
+    res.status(201).json(creado);
   } catch (err) {
     next(err);
   }
 }
 
-export async function obtenerProductosCtrl(req, res, next) {
+export async function listar(req, res, next) {
   try {
-    const { page = 1, pageSize = 10, tipo, usuario_id } = req.query;
-    const resultado = await listarProductos({ pagina: page, tamanoPagina: pageSize, tipo, usuario_id });
-    res.json(aHateoasColeccion(req, 'productos', resultado.rows, resultado));
+    const { page = 1, pageSize = 10, tipo, usuario_id, pagina, tamanoPagina } = req.query;
+    const paginaNum = Number(pagina ?? page ?? 1);
+    const tamNum = Number(tamanoPagina ?? pageSize ?? 10);
+    const resultado = await listarProductos({ pagina: paginaNum, tamanoPagina: tamNum, tipo, usuario_id });
+    res.json({ total: resultado.total, pagina: resultado.pagina, tamanoPagina: resultado.pageSize, items: resultado.rows });
   } catch (err) {
     next(err);
   }
 }
 
-export async function obtenerProductoPorIdCtrl(req, res, next) {
+export async function obtenerPorId(req, res, next) {
   try {
     const { id } = req.params;
     const encontrado = await buscarProductoPorId(id);
     if (!encontrado) throw Object.assign(new Error('Producto no encontrado'), { status: 404 });
-    res.json(aHateoasRecurso(req, 'productos', encontrado));
+    res.json(encontrado);
   } catch (err) {
     next(err);
   }
 }
 
-export async function actualizarProductoCtrl(req, res, next) {
+export async function actualizar(req, res, next) {
   try {
     const { id } = req.params;
     const datos = { ...req.body };
     const actualizado = await actualizarProducto(id, datos);
     if (!actualizado) throw Object.assign(new Error('Producto no encontrado'), { status: 404 });
-    res.json(aHateoasRecurso(req, 'productos', actualizado));
+    res.json(actualizado);
   } catch (err) {
     next(err);
   }
 }
 
-export async function eliminarProductoCtrl(req, res, next) {
+export async function eliminar(req, res, next) {
   try {
     const { id } = req.params;
     const ok = await eliminarProducto(id);
